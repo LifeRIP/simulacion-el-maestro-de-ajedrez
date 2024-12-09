@@ -1,6 +1,5 @@
-import simpy
 from simulacion import simulacion
-from interfaz import main
+from interfaz import mostrarInterfaz
 
 if __name__ == "__main__":
-    main()
+    mostrarInterfaz()
