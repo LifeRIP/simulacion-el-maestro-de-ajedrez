@@ -60,7 +60,7 @@ class SimulacionGUI:
 
             # Iniciar simulación
             env = simpy.Environment()
-            env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES))
+            env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES, self.root))
             env.run()
 
             # Obtener soluciones del robot y del humano

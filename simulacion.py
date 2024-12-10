@@ -1,10 +1,10 @@
 import random
-
+from time import time
+from tkinter import messagebox
 
 #################################################################################
 # Algoritmo determinista para resolver el problema de las n reinas
 #################################################################################
-
 def is_safe(board, row, col, n):
     """Verifica si una reina puede ser colocada en la posición (row, col)."""
     # Verificar esta columna hacia arriba
@@ -50,7 +50,6 @@ def solve_n_queens(n):
 #################################################################################
 # Algoritmo Las Vegas para resolver el problema de las n reinas
 #################################################################################
-
 def is_safe_las_vegas(board, row, col, n):
     """Verifica si una reina puede ser colocada en la posición (row, col)."""
     for i in range(row):
@@ -92,9 +91,6 @@ def print_solution(board):
 #################################################################################
 # Simulación de la competencia entre el robot y el humano
 #################################################################################
-import random
-import simpy
-from time import time
 
 # Configuración de la simulación
 SIMULATION_TIME = 8 * 60 * 60 # 8 horas en segundos
@@ -102,9 +98,9 @@ ARRIVAL_INTERVAL = (10, 30)  # Intervalo de llegada del robot en segundos
 BOARD_SIZES = [5]  # Tamaños posibles del tablero
 #BOARD_SIZES = [4, 5, 6, 8, 10, 12, 15]  # Tamaños posibles del tablero
 
-def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL, board_sizes=BOARD_SIZES):
+def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL, board_sizes=BOARD_SIZES, root=None):
     """Configura el ambiente de simulación."""
-    resultados = []  # Lista de resultados de las partidas
+    #resultados = []  # Lista de resultados de las partidas
     ganancias = [0]  # Ganancias acumuladas
     fin_simulacion = sim_time  # Definir el tiempo máximo de simulación
     
@@ -126,13 +122,13 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
         # Registrar resultados
         if robot_solution:
             print(f"{env.now:.2f}s - Robot resolvió el tablero en {robot_time:.8f} segundos")
-            resultados.append(('Robot', robot_time, n))
+            #resultados.append(('Robot', robot_time, n))
         else:
             print(f"{env.now:.2f}s - El Robot no resolvió el tablero")
         
         if humano_solution:
             print(f"{env.now:.2f}s - Humano resolvió el tablero en {humano_time:.8f} segundos")
-            resultados.append(('Humano', humano_time, n))
+            #resultados.append(('Humano', humano_time, n))
         else:
             print(f"{env.now:.2f}s - El Humano no resolvió el tablero")
         
@@ -155,6 +151,10 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
     """ print("Resultados de las partidas:")
     for tipo, tiempo, n in resultados:
         print(f"  {tipo} resolvió el tablero de tamaño {n}x{n} en {tiempo:.4f} segundos") """
+    
+    # Mostrar ventana emergente con el resultado de ganancias[0]
+    if root:
+        root.after(0, lambda: messagebox.showinfo("Resultado", f"Ganancia total: {ganancias[0]} unidades", parent=root))
 
 # Ejemplo de uso
 """ if __name__ == "__main__":
