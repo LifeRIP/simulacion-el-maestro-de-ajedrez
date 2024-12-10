@@ -1,8 +1,14 @@
 import tkinter as tk
-from tkinter import ttk, scrolledtext, messagebox
+from tkinter import ttk, messagebox
 import simpy
-from simulacion import simulacion
+from simulacion import simulacion, las_vegas_n_queens, solve_n_queens
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+import time
 
+#################################################################################
+# Interfaz gráfica de usuario para la simulación
+#################################################################################
 class SimulacionGUI:
     def __init__(self, root):
         self.root = root
@@ -56,6 +62,14 @@ class SimulacionGUI:
             env = simpy.Environment()
             env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES))
             env.run()
+
+            # Obtener soluciones del robot y del humano
+            n = BOARD_SIZES[0]
+            robot_solution = las_vegas_n_queens(n)
+            humano_solution = solve_n_queens(n)
+
+            # Visualizar tableros
+            visualizar_tableros(robot_solution, humano_solution)
             
         except ValueError as e:
             messagebox.showerror("Error", "Por favor, ingrese valores válidos.")
@@ -73,14 +87,9 @@ def mostrarInterfaz():
     app = SimulacionGUI(root)
     root.mainloop()
 
-
 #################################################################################
 # Gráfica de comparación de algoritmos
 #################################################################################
-import matplotlib.pyplot as plt
-import time
-from simulacion import solve_n_queens, las_vegas_n_queens
-
 def comparar_algoritmos(tamanos_tablero, repeticiones=10):
     """Compara el tiempo promedio de los algoritmos para diferentes tamaños de tablero."""
     tiempos_determinista = []
@@ -133,3 +142,32 @@ def mostrarGrafica():
     # Graficar resultados con escala logarítmica
     print("Generando gráfica de barras...")
     graficar_comparacion_barras_log(tamanos_tablero, tiempos_determinista, tiempos_las_vegas)
+
+#################################################################################
+# Visualización de tableros
+#################################################################################
+def visualizar_tableros(robot_solution, humano_solution):
+    """Visualiza los tableros del robot y del humano en una sola ventana."""
+    n = len(robot_solution)
+    
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+    
+    # Función para dibujar un tablero
+    def draw_board(ax, board, title):
+        for i in range(n):
+            for j in range(n):
+                color = 'white' if (i + j) % 2 == 0 else 'gray'
+                ax.add_patch(Rectangle((j, n-1-i), 1, 1, facecolor=color))
+                if board[i][j]:
+                    ax.text(j + 0.5, n-1-i + 0.5, '♕', fontsize=24, ha='center', va='center', color='black' if color == 'white' else 'white')
+        ax.set_xlim(0, n)
+        ax.set_ylim(0, n)
+        ax.grid(False)
+        ax.axis('off')
+        ax.set_title(title)
+    
+    # Dibujar tableros
+    draw_board(axs[0], robot_solution, 'Solución del Robot')
+    draw_board(axs[1], humano_solution, 'Solución del Humano')
+    
+    plt.show()
