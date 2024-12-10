@@ -5,6 +5,7 @@ from simulacion import simulacion, las_vegas_n_queens, solve_n_queens
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import time
+import random
 
 #################################################################################
 # Interfaz gráfica de usuario para la simulación
@@ -68,11 +69,11 @@ class SimulacionGUI:
             ganancias = simulacion_process.value
 
             # Obtener soluciones del robot y del humano
-            n = BOARD_SIZES[0]
+            n = random.choice(BOARD_SIZES)
             robot_solution = las_vegas_n_queens(n)
             humano_solution = solve_n_queens(n)
 
-            visualizar_tableros(robot_solution, humano_solution, ganancias)
+            visualizar_tableros(robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL)
             
         except ValueError as e:
             messagebox.showerror("Error", "Por favor, ingrese valores válidos.")
@@ -149,10 +150,9 @@ def mostrarGrafica():
 #################################################################################
 # Visualización de tableros
 #################################################################################
-def visualizar_tableros(robot_solution, humano_solution, ganancias):
+def visualizar_tableros(robot_solution, humano_solution, ganancias, board_sizes, sim_time, arrival_interval):
     """Visualiza los tableros del robot y del humano en una sola ventana."""
     n = len(robot_solution)
-    
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
     
     # Función para dibujar un tablero
@@ -173,5 +173,13 @@ def visualizar_tableros(robot_solution, humano_solution, ganancias):
     draw_board(axs[0], robot_solution, 'Solución del Robot')
     draw_board(axs[1], humano_solution, 'Solución del Humano')
     
-    plt.figtext(0.5, 0.01, f"Ganancia total: {ganancias} unidades", ha="center", fontsize=12)
+    # Ajustar los márgenes para que haya espacio para el texto
+    plt.subplots_adjust(top=0.75)
+    
+    # Añadir texto en la parte superior de la figura
+    plt.figtext(0.5, 0.95, f"Tamaño del tablero: {board_sizes}", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.90, f"Tiempo de simulación: {sim_time / 3600} horas", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.85, f"Intervalo de llegada del robot: {arrival_interval} segundos", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.80, f"Ganancia total: {ganancias} unidades", ha="center", fontsize=12)
+    
     plt.show()
