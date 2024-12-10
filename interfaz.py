@@ -24,7 +24,7 @@ class SimulacionGUI:
         # Widgets usando grid consistentemente
         ttk.Label(main_frame, text="Tamaño del tablero:").grid(row=0, column=0, sticky=tk.W, pady=5)
         self.n_size = tk.StringVar(value="8")
-        tk.OptionMenu(main_frame, self.n_size, "4", "5", "6", "8", "10", "12", "15").grid(row=0, column=1, sticky=tk.W, pady=5)
+        tk.OptionMenu(main_frame, self.n_size, "aleatorios", "4", "5", "6", "8", "10", "12", "15").grid(row=0, column=1, sticky=tk.W, pady=5)
 
         ttk.Label(main_frame, text="Tiempo de simulación (en horas):").grid(row=1, column=0, sticky=tk.W, pady=5)
         self.sim_time = tk.StringVar(value="8")
@@ -51,7 +51,10 @@ class SimulacionGUI:
             # Actualizar variables globales de simulación
             SIMULATION_TIME = float(self.sim_time.get()) * 3600  # Convertir horas a segundos
             ARRIVAL_INTERVAL = (float(self.interval_min.get()), float(self.interval_max.get()))
-            BOARD_SIZES = [int(self.n_size.get())]
+            if self.n_size.get() == "aleatorios":
+                BOARD_SIZES = [4, 5, 6, 8, 10, 12, 15]
+            else:
+                BOARD_SIZES = [int(self.n_size.get())]
             
             # Validar intervalo de llegada
             if ARRIVAL_INTERVAL[0] >= ARRIVAL_INTERVAL[1]:
@@ -60,16 +63,16 @@ class SimulacionGUI:
 
             # Iniciar simulación
             env = simpy.Environment()
-            env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES, self.root))
+            simulacion_process = env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES, self.root))
             env.run()
+            ganancias = simulacion_process.value
 
             # Obtener soluciones del robot y del humano
             n = BOARD_SIZES[0]
             robot_solution = las_vegas_n_queens(n)
             humano_solution = solve_n_queens(n)
 
-            # Visualizar tableros
-            visualizar_tableros(robot_solution, humano_solution)
+            visualizar_tableros(robot_solution, humano_solution, ganancias)
             
         except ValueError as e:
             messagebox.showerror("Error", "Por favor, ingrese valores válidos.")
@@ -146,7 +149,7 @@ def mostrarGrafica():
 #################################################################################
 # Visualización de tableros
 #################################################################################
-def visualizar_tableros(robot_solution, humano_solution):
+def visualizar_tableros(robot_solution, humano_solution, ganancias):
     """Visualiza los tableros del robot y del humano en una sola ventana."""
     n = len(robot_solution)
     
@@ -170,4 +173,5 @@ def visualizar_tableros(robot_solution, humano_solution):
     draw_board(axs[0], robot_solution, 'Solución del Robot')
     draw_board(axs[1], humano_solution, 'Solución del Humano')
     
+    plt.figtext(0.5, 0.01, f"Ganancia total: {ganancias} unidades", ha="center", fontsize=12)
     plt.show()

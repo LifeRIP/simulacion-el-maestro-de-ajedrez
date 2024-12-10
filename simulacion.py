@@ -95,8 +95,7 @@ def print_solution(board):
 # Configuración de la simulación
 SIMULATION_TIME = 8 * 60 * 60 # 8 horas en segundos
 ARRIVAL_INTERVAL = (10, 30)  # Intervalo de llegada del robot en segundos
-BOARD_SIZES = [5]  # Tamaños posibles del tablero
-#BOARD_SIZES = [4, 5, 6, 8, 10, 12, 15]  # Tamaños posibles del tablero
+BOARD_SIZES = [4, 5, 6, 8, 10, 12, 15]  # Tamaños posibles del tablero
 
 def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL, board_sizes=BOARD_SIZES, root=None):
     """Configura el ambiente de simulación."""
@@ -105,8 +104,11 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
     fin_simulacion = sim_time  # Definir el tiempo máximo de simulación
     
     while env.now < fin_simulacion:
-        # Seleccionar tamaño del tablero aleatorio (para ambos jugadores)
-        n = random.choice(board_sizes)
+        # Seleccionar tamaño del tablero (para ambos jugadores)
+        if len(board_sizes) == 1:
+            n = board_sizes[0]
+        else:
+            n = random.choice(board_sizes)
         print(f"{env.now:.2f}s - Comienza juego con tablero de tamaño {n}x{n}")
 
         # Resolver con el algoritmo Las Vegas para el robot
@@ -148,16 +150,16 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
     # Al finalizar la simulación, mostrar el resumen
     print("\n=== Resumen de la simulación ===")
     print(f"Ganancia total: {ganancias[0]} unidades")
-    """ print("Resultados de las partidas:")
+    """
+    print("Resultados de las partidas:")
     for tipo, tiempo, n in resultados:
-        print(f"  {tipo} resolvió el tablero de tamaño {n}x{n} en {tiempo:.4f} segundos") """
+        print(f"  {tipo} resolvió el tablero de tamaño {n}x{n} en {tiempo:.4f} segundos")
+    """
     
-    # Mostrar ventana emergente con el resultado de ganancias[0]
-    if root:
-        root.after(0, lambda: messagebox.showinfo("Resultado", f"Ganancia total: {ganancias[0]} unidades", parent=root))
+    return ganancias[0]
 
-# Ejemplo de uso
-""" if __name__ == "__main__":
-    env = simpy.Environment()
-    env.process(simulacion(env))
-    env.run() """
+    # Mostrar ventana emergente con el resultado de ganancias[0]
+    """
+    if root:
+        #root.after(0, lambda: messagebox.showinfo("Resultado", f"Ganancia total: {ganancias[0]} unidades", parent=root))
+    """
