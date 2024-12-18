@@ -4,7 +4,6 @@ import simpy
 from simulacion import simulacion, las_vegas_n_queens, solve_n_queens
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-import time
 import random
 
 #################################################################################
