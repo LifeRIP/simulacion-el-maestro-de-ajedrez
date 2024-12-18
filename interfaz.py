@@ -24,7 +24,7 @@ class SimulacionGUI:
 
         # Widgets usando grid consistentemente
         ttk.Label(main_frame, text="Tamaño del tablero:").grid(row=0, column=0, sticky=tk.W, pady=5)
-        self.n_size = tk.StringVar(value="8")
+        self.n_size = tk.StringVar(value="6")
         tk.OptionMenu(main_frame, self.n_size, "aleatorios", "4", "5", "6", "8", "10", "12", "15").grid(row=0, column=1, sticky=tk.W, pady=5)
 
         ttk.Label(main_frame, text="Tiempo de simulación (en horas):").grid(row=1, column=0, sticky=tk.W, pady=5)
@@ -66,14 +66,14 @@ class SimulacionGUI:
             env = simpy.Environment()
             simulacion_process = env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES, self.root))
             env.run()
-            ganancias = simulacion_process.value
+            ganancias, end_time, partidas  = simulacion_process.value
 
             # Obtener soluciones del robot y del humano
             n = random.choice(BOARD_SIZES)
             _, robot_solution = las_vegas_n_queens(n)
             _, humano_solution = solve_n_queens(n)
 
-            visualizar_tableros(robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL)
+            visualizar_tableros(robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas)
             
         except ValueError as e:
             messagebox.showerror("Error", "Por favor, ingrese valores válidos.")
@@ -150,7 +150,7 @@ def mostrarGrafica():
 #################################################################################
 # Visualización de tableros
 #################################################################################
-def visualizar_tableros(robot_solution, humano_solution, ganancias, board_sizes, sim_time, arrival_interval):
+def visualizar_tableros(robot_solution, humano_solution, ganancias, board_sizes, sim_time, arrival_interval, end_time, partidas):
     """Visualiza los tableros del robot y del humano en una sola ventana."""
     n = len(robot_solution)
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
@@ -174,12 +174,14 @@ def visualizar_tableros(robot_solution, humano_solution, ganancias, board_sizes,
     draw_board(axs[1], humano_solution, 'Solución del Humano')
     
     # Ajustar los márgenes para que haya espacio para el texto
-    plt.subplots_adjust(top=0.75)
+    plt.subplots_adjust(top=0.65)
     
     # Añadir texto en la parte superior de la figura
-    plt.figtext(0.5, 0.95, f"Tamaño del tablero: {board_sizes}", ha="center", fontsize=12)
-    plt.figtext(0.5, 0.90, f"Tiempo de simulación: {sim_time / 3600} horas", ha="center", fontsize=12)
-    plt.figtext(0.5, 0.85, f"Intervalo de llegada del robot: {arrival_interval} segundos", ha="center", fontsize=12)
-    plt.figtext(0.5, 0.80, f"Ganancia total: {ganancias} unidades", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.95, f"Partidas jugadas: {partidas}", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.90, f"Tamaño del tablero: {board_sizes}", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.85, f"Tiempo de simulación: {sim_time / 3600} horas", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.80, f"Intervalo de llegada del robot: {arrival_interval} segundos", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.75, f"Ganancia total: {ganancias} unidades", ha="center", fontsize=12)
+    plt.figtext(0.5, 0.70, f"Tiempo de ejecución del codigo: {end_time:.2f} segundos", ha="center", fontsize=12)
     
     plt.show()

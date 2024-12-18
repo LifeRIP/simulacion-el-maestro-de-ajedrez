@@ -109,9 +109,11 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
     #resultados = []  # Lista de resultados de las partidas
     ganancias = [0]  # Ganancias acumuladas
     fin_simulacion = sim_time  # Definir el tiempo máximo de simulación
-    sim_start_time = time();
+    start_time = time()
+    partidas = 0
     
     while env.now < fin_simulacion:
+        partidas += 1
         # Seleccionar tamaño del tablero (para ambos jugadores)
         if len(board_sizes) == 1:
             n = board_sizes[0]
@@ -152,9 +154,11 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
         # Esperar para la próxima simulación
         yield env.timeout(random.uniform(*arrival_interval))
     
+    end_time = time() - start_time
     # Al finalizar la simulación, mostrar el resumen
-    print(time() - sim_start_time)
+    print("\nSimulación finalizada en {:.2f} segundos".format(end_time))
     print("\n=== Resumen de la simulación ===")
+    print(f"Partidas jugadas: {partidas}")
     print(f"Ganancia total: {ganancias[0]} unidades")
     print(f"Tiempo de simulación: {sim_time / 3600} horas")
     print(f"Intervalo de llegada: {arrival_interval[0]} - {arrival_interval[1]} segundos")
@@ -165,7 +169,7 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
         print(f"  {tipo} resolvió el tablero de tamaño {n}x{n} en {tiempo:.4f} segundos")
     """
     
-    return ganancias[0]
+    return ganancias[0], end_time, partidas
 
     # Mostrar ventana emergente con el resultado de ganancias[0]
     """
