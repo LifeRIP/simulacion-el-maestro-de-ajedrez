@@ -70,8 +70,8 @@ class SimulacionGUI:
 
             # Obtener soluciones del robot y del humano
             n = random.choice(BOARD_SIZES)
-            robot_solution = las_vegas_n_queens(n)
-            humano_solution = solve_n_queens(n)
+            _, robot_solution = las_vegas_n_queens(n)
+            _, humano_solution = solve_n_queens(n)
 
             visualizar_tableros(robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL)
             
@@ -94,27 +94,27 @@ def mostrarInterfaz():
 #################################################################################
 # Gráfica de comparación de algoritmos
 #################################################################################
-def comparar_algoritmos(tamanos_tablero, repeticiones=10):
+def comparar_algoritmos(tamanos_tablero, repeticiones_determinista=40, repeticiones_las_vegas=40):
     """Compara el tiempo promedio de los algoritmos para diferentes tamaños de tablero."""
-    tiempos_determinista = []
-    tiempos_las_vegas = []
+    prom_tiempos_determinista = []
+    prom_tiempos_las_vegas = []
 
     for n in tamanos_tablero:
         # Medir tiempo para el algoritmo determinista
-        start_time = time.time()
-        solve_n_queens(n)
-        tiempo_determinista = time.time() - start_time
-        tiempos_determinista.append(tiempo_determinista)
+        tiempos_determinista = []
+        for _ in range(repeticiones_determinista):
+            time_determinista, _ = solve_n_queens(n)
+            tiempos_determinista.append(time_determinista)
+        prom_tiempos_determinista.append(sum(tiempos_determinista)/ repeticiones_determinista)
 
         # Medir tiempo promedio para el algoritmo Las Vegas
         tiempos_vegas = []
-        for _ in range(repeticiones):
-            start_time = time.time()
-            las_vegas_n_queens(n)
-            tiempos_vegas.append(time.time() - start_time)
-        tiempos_las_vegas.append(sum(tiempos_vegas) / repeticiones)
+        for _ in range(repeticiones_las_vegas):
+            time_vegas, _ = las_vegas_n_queens(n)
+            tiempos_vegas.append(time_vegas)
+        prom_tiempos_las_vegas.append(sum(tiempos_vegas) / repeticiones_las_vegas)
 
-    return tiempos_determinista, tiempos_las_vegas
+    return prom_tiempos_determinista, prom_tiempos_las_vegas
 
 def graficar_comparacion_barras_log(tamanos_tablero, tiempos_determinista, tiempos_las_vegas):
     """Genera un gráfico de barras comparativo con escala logarítmica en el eje Y."""
@@ -141,7 +141,7 @@ def mostrarGrafica():
 
     # Comparar algoritmos
     print("Comparando algoritmos...")
-    tiempos_determinista, tiempos_las_vegas = comparar_algoritmos(tamanos_tablero, repeticiones)
+    tiempos_determinista, tiempos_las_vegas = comparar_algoritmos(tamanos_tablero)
 
     # Graficar resultados con escala logarítmica
     print("Generando gráfica de barras...")

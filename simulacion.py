@@ -39,12 +39,14 @@ def solve_n_queens_util(board, row, n):
     return False
 
 def solve_n_queens(n):
+    start_time = time();
     """Resuelve el problema de las n reinas y devuelve la solución."""
     board = [[False] * n for _ in range(n)]  # Crear tablero vacío
     if not solve_n_queens_util(board, 0, n):
         print("No hay solución para el tamaño dado.")
         return None
-    return board
+    end_time = time() - start_time;
+    return end_time, board
 
 
 #################################################################################
@@ -62,7 +64,8 @@ def is_safe_las_vegas(board, row, col, n):
     return True
 
 def las_vegas_n_queens(n):
-    """Resuelve el problema de las n reinas usando el método Las Vegas."""
+    """Resuelve el problema de las n reinas usando el método Las Vegas.""" 
+    start_time = time();
     while True:
         board = [[False] * n for _ in range(n)]
         for row in range(n):
@@ -72,7 +75,8 @@ def las_vegas_n_queens(n):
             col = random.choice(safe_columns)  # Elegir una columna aleatoria segura
             board[row][col] = True
         else:
-            return board  # Solución encontrada
+            end_time = time() - start_time;
+            return end_time, board  # Solución encontrada
     
 # Imprimir el tablero en consola con las reinas ubicadas
 def print_solution(board):
@@ -98,10 +102,14 @@ ARRIVAL_INTERVAL = (10, 30)  # Intervalo de llegada del robot en segundos
 BOARD_SIZES = [4, 5, 6, 8, 10, 12, 15]  # Tamaños posibles del tablero
 
 def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL, board_sizes=BOARD_SIZES, root=None):
+
+    print("Iniciando simulación...")
+
     """Configura el ambiente de simulación."""
     #resultados = []  # Lista de resultados de las partidas
     ganancias = [0]  # Ganancias acumuladas
     fin_simulacion = sim_time  # Definir el tiempo máximo de simulación
+    sim_start_time = time();
     
     while env.now < fin_simulacion:
         # Seleccionar tamaño del tablero (para ambos jugadores)
@@ -109,31 +117,28 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
             n = board_sizes[0]
         else:
             n = random.choice(board_sizes)
-        print(f"{env.now:.2f}s - Comienza juego con tablero de tamaño {n}x{n}")
+        #print(f"{env.now:.2f}s - Comienza juego con tablero de tamaño {n}x{n}")
 
         # Resolver con el algoritmo Las Vegas para el robot
-        start_time = time()
-        robot_solution = las_vegas_n_queens(n)
-        robot_time = time() - start_time
+        robot_time, _ = las_vegas_n_queens(n)
+        print(f"{env.now:.2f}s - Robot resolvió el tablero en {robot_time:.8f} segundos")
         
         # Resolver con el algoritmo determinista para el humano
-        start_time = time()
-        humano_solution = solve_n_queens(n)
-        humano_time = time() - start_time
+        humano_time, _ = solve_n_queens(n)
+        print(f"{env.now:.2f}s - Humano resolvió el tablero en {humano_time:.8f} segundos")
         
-        # Registrar resultados
+        """ # Registrar resultados
         if robot_solution:
-            print(f"{env.now:.2f}s - Robot resolvió el tablero en {robot_time:.8f} segundos")
             #resultados.append(('Robot', robot_time, n))
         else:
             print(f"{env.now:.2f}s - El Robot no resolvió el tablero")
         
         if humano_solution:
-            print(f"{env.now:.2f}s - Humano resolvió el tablero en {humano_time:.8f} segundos")
             #resultados.append(('Humano', humano_time, n))
         else:
-            print(f"{env.now:.2f}s - El Humano no resolvió el tablero")
+            print(f"{env.now:.2f}s - El Humano no resolvió el tablero") """
         
+        #print(robot_time, humano_time)
         # Comparar resultados
         if robot_time < humano_time:
             print(f"{env.now:.2f}s - El robot gana con un tiempo de {robot_time:.8f} segundos")
@@ -148,8 +153,12 @@ def simulacion(env, sim_time=SIMULATION_TIME, arrival_interval=ARRIVAL_INTERVAL,
         yield env.timeout(random.uniform(*arrival_interval))
     
     # Al finalizar la simulación, mostrar el resumen
+    print(time() - sim_start_time)
     print("\n=== Resumen de la simulación ===")
     print(f"Ganancia total: {ganancias[0]} unidades")
+    print(f"Tiempo de simulación: {sim_time / 3600} horas")
+    print(f"Intervalo de llegada: {arrival_interval[0]} - {arrival_interval[1]} segundos")
+    print(f"Tamaños de tablero: {board_sizes}\n")
     """
     print("Resultados de las partidas:")
     for tipo, tiempo, n in resultados:
