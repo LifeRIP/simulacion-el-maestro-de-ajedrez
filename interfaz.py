@@ -5,6 +5,9 @@ from simulacion import simulacion, las_vegas_n_queens, solve_n_queens
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import random
+from escenario1 import escenario1
+from escenario2 import escenario2
+from escenario3 import escenario3
 
 #################################################################################
 # Interfaz gráfica de usuario para la simulación
@@ -45,6 +48,11 @@ class SimulacionGUI:
 
         ttk.Button(main_frame, text="Mostrar gráfica de comparación", 
            command=self.show_graph).grid(row=4, column=0, columnspan=2, pady=10)
+
+        # Botones para los escenarios
+        ttk.Button(main_frame, text="Escenario 1", command=self.run_escenario1).grid(row=5, column=0, columnspan=2, pady=10)
+        ttk.Button(main_frame, text="Escenario 2", command=self.run_escenario2).grid(row=6, column=0, columnspan=2, pady=10)
+        ttk.Button(main_frame, text="Escenario 3", command=self.run_escenario3).grid(row=7, column=0, columnspan=2, pady=10)
         
     def start_simulation(self):
         try:
@@ -84,6 +92,27 @@ class SimulacionGUI:
             mostrarGrafica()
         except Exception as e:
             messagebox.showerror("Error", f"Error al mostrar la gráfica: {str(e)}")
+
+    def run_escenario1(self):
+        try:
+            robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas = escenario1()
+            visualizar_tableros(robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas)
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al ejecutar el escenario 1: {str(e)}")
+
+    def run_escenario2(self):
+        try:
+            robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas = escenario2()
+            visualizar_tableros(robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas)
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al ejecutar el escenario 2: {str(e)}")
+
+    def run_escenario3(self):
+        try:
+            robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas = escenario3()
+            visualizar_tableros(robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas)
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al ejecutar el escenario 3: {str(e)}")
 
 def mostrarInterfaz():
     root = tk.Tk()

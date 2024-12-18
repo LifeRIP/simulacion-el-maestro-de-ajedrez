@@ -1,5 +1,6 @@
-from simulacion import simulacion
+from simulacion import simulacion, las_vegas_n_queens, solve_n_queens
 import simpy
+import random
 
 def escenario1():
     """
@@ -12,8 +13,16 @@ def escenario1():
     
     print("\n=== Escenario 1: Mayores ganancias en intervalo estándar ===")
     env = simpy.Environment()
-    env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES))
+    simulacion_process = env.process(simulacion(env, SIMULATION_TIME, ARRIVAL_INTERVAL, BOARD_SIZES))
     env.run()
+    ganancias, end_time, partidas = simulacion_process.value
+
+    # Obtener soluciones del robot y del humano
+    n = random.choice(BOARD_SIZES)
+    _, robot_solution = las_vegas_n_queens(n)
+    _, humano_solution = solve_n_queens(n)
+
+    return robot_solution, humano_solution, ganancias, BOARD_SIZES, SIMULATION_TIME, ARRIVAL_INTERVAL, end_time, partidas
 
 if __name__ == "__main__":
     escenario1()
