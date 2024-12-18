@@ -173,7 +173,7 @@ def visualizar_tableros(robot_solution, humano_solution, ganancias, board_sizes,
     draw_board(axs[1], humano_solution, 'Solución del Humano')
     
     # Ajustar los márgenes para que haya espacio para el texto
-    plt.subplots_adjust(top=0.65)
+    plt.subplots_adjust(top=0.70)
     
     # Añadir texto en la parte superior de la figura
     plt.figtext(0.5, 0.95, f"Partidas jugadas: {partidas}", ha="center", fontsize=12)
@@ -181,6 +181,4 @@ def visualizar_tableros(robot_solution, humano_solution, ganancias, board_sizes,
     plt.figtext(0.5, 0.85, f"Tiempo de simulación: {sim_time / 3600} horas", ha="center", fontsize=12)
     plt.figtext(0.5, 0.80, f"Intervalo de llegada del robot: {arrival_interval} segundos", ha="center", fontsize=12)
     plt.figtext(0.5, 0.75, f"Ganancia total: {ganancias} unidades", ha="center", fontsize=12)
-    plt.figtext(0.5, 0.70, f"Tiempo de ejecución del codigo: {end_time:.2f} segundos", ha="center", fontsize=12)
-    
     plt.show()
